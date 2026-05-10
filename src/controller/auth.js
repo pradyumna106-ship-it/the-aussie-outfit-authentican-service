@@ -7,8 +7,8 @@ const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "15m";
 const REFRESH_TOKEN_EXPIRES_IN_DAYS = Number(process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS || 7);
 
 function signAccessToken(user) {
-  if (!process.env.JWT_ACCESS_SECRET) {
-    throw new Error("JWT_ACCESS_SECRET is required");
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is required");
   }
 
   return jwt.sign(
@@ -16,7 +16,7 @@ function signAccessToken(user) {
       sub: user._id.toString(),
       roles: user.roles
     },
-    process.env.JWT_ACCESS_SECRET,
+    process.env.JWT_SECRET,
     {
       expiresIn: ACCESS_TOKEN_EXPIRES_IN
     }
