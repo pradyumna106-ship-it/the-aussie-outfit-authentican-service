@@ -417,3 +417,61 @@ export const verifyToken = async (req, res) => {
     });
   }
 };
+
+export const updateUser = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id || req.params.id;
+    const { email, phone, password, roles } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    if (userId !== req.user.id && !req.user.roles.includes("admin")) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden"
+      });
+    }
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        email,
+        phone,
+        password,
+        roles: roles?.length ? roles : ["customer"],
+        status: "active"
+      },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: true,
+      data: user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
+
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}

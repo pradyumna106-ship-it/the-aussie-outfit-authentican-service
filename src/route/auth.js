@@ -9,7 +9,9 @@ import {
   getCurrentUser,
   forgotPassword,
   resetPassword,
-  verifyToken
+  verifyToken,
+  updateUser,
+  getUsers
 } from "../controller/auth.js";
 
 import { verifyJWT } from "../middleware/auth.js";
@@ -32,6 +34,10 @@ router.post("/logout", logoutUser);
 
 router.post("/logout-all", verifyJWT, logoutAllSessions);
 
-router.get("/me", verifyJWT, getCurrentUser);
+router.get("/:id", verifyJWT, getCurrentUser);
+
+router.put("/:id", verifyJWT, updateUser);
+
+router.get("/", getUsers);
 
 export default router;
