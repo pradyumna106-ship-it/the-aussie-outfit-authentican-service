@@ -1,0 +1,43 @@
+stages:
+  - backend_test
+  - backend_docker_build_push
+  - deploy
+
+variables:
+  IMAGE_NAME: pradyumnajkumar/everythin-australia
+  IMAGE_TAG: authentication-service
+
+backend_test:
+  stage: backend_test
+  image: node:20-alpine
+  script:
+    - npm ci
+    - npm test
+    
+build_image:
+  stage: backend_docker_build_push
+  image: docker:29.4.0
+  services:
+    - docker:29.4.0-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$PASSWORD" | docker login -u "$USER_NAME" --password-stdin
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+
+
+deploy:
+  stage: deploy
+  image: node:20-alpine  # For Vercel CLI
+  needs: ["build_image"]  # Explicitly wait for package
+  environment:
+    name: production
+    url: https://library-hub-backend-cyan.vercel.app  # Your Vercel URL
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"  # Or $CI_MERGE_REQUEST_IID for previews
+  when: manual  # Only deploy after manual approval in GitLab UI
+  script:
+    - npm i -g vercel
+    - vercel --prod --token $VERCEL_TOKEN --confirm  # Deploys to production
