@@ -338,7 +338,8 @@ export const forgotPassword = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Password reset token generated",
-      resetToken
+      resetToken,
+      user,
     });
 
   } catch (error) {
