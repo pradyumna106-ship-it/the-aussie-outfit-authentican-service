@@ -34,7 +34,7 @@ deploy:
   needs: ["build_image"]  # Explicitly wait for package
   environment:
     name: production
-    url: https://library-hub-backend-cyan.vercel.app  # Your Vercel URL
+    url: https://the-aussie-outfit-authentican-servi.vercel.app  # Your Vercel URL
   rules:
     - if: $CI_COMMIT_BRANCH == "main"  # Or $CI_MERGE_REQUEST_IID for previews
   when: manual  # Only deploy after manual approval in GitLab UI
